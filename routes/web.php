@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +12,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::prefix('admin')->group(function() {
+    Route::get('login', 'AdminController@viewLogin')->name('login');
+    Route::get('/', 'AdminController@viewHome')->name('home');
+
+    Route::prefix('auth')->group(function() {
+        Route::post('login', 'AdminController@login');
+    });
+});
+
+Route::get('/', function() {
     return view('welcome');
 });
