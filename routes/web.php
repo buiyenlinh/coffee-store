@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->group(function() {
     Route::get('login', 'AdminController@viewLogin')->name('login');
     Route::get('/', 'AdminController@viewHome')->name('home');
+    Route::get('place', 'AdminController@viewPlace')->name('place');
 
     Route::prefix('auth')->group(function() {
         Route::post('login', 'AdminController@login');

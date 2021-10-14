@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Place;
 
 class AdminController extends Controller
 {
@@ -67,27 +68,33 @@ class AdminController extends Controller
         $level = $this->getLevel();
         $menu = [];
         $menu[] = [
-            'link' => route('home'),
+            'link' => route('home', [], false),
             'title' => 'Trang chủ',
             'icon' => 'fas fa-tachometer-alt'
         ];
 
         $menu[] = [
-            'link' => route('home'),
+            'link' => route('home', [], false),
             'title' => 'Danh sách bàn',
             'icon' => 'fas fa-table'
         ];
 
         $menu[] = [
-            'link' => route('home'),
+            'link' => route('home', [], false),
             'title' => 'Sản phẩm',
             'icon' => 'fas fa-coffee'
         ];
 
         $menu[] = [
-            'link' => route('home'),
+            'link' => route('home', [], false),
             'title' => 'Loại sản phẩm',
             'icon' => 'fas fa-clipboard-list'
+        ];
+
+        $menu[] = [
+            'link' => route('place', [], false),
+            'title' => 'Khu vực',
+            'icon' => 'fas fa-map'
         ];
         return $menu;
     }
@@ -103,7 +110,8 @@ class AdminController extends Controller
         }
         $data = [
             'user' => $user,
-            'menu' => $menu
+            'menu' => $menu,
+            'title' => null
         ];
 
         return $data;
@@ -114,6 +122,18 @@ class AdminController extends Controller
      */
     public function viewHome() {
         $data = $this->getData();
+        $data['title'] = 'Trang chủ';
         return view('admin.home', $data);
+    }
+
+    /**
+     * Places page
+     */
+    public function viewPlace() {
+        $data = $this->getData();
+        $data['title'] = 'Khu vực';
+        $places = Place::all();
+        $data['places'] = $places->toArray();
+        return view('admin.place', $data);
     }
 }
