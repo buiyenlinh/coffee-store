@@ -7,7 +7,7 @@
   <script src="{{ asset('js/app.js') }}"></script>  
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="/css/admin.css">
-  <title>{{ $title ?? 'Title your website' }}</title>
+  <title>{{ $title ?? 'Your site title' }}</title>
 </head>
 <body>
   <div class="wrapper">
@@ -16,7 +16,7 @@
         <ul class="nav nav-pills flex-column" role="tablist">
           @foreach ($menu as $_menu)
           <li class="nav-item">
-            <a class="nav-link" data-toggle="pill" href="{{ $_menu['link'] }}">
+            <a class="nav-link" href="{{ $_menu['link'] }}">
               <em class="{{ $_menu['icon'] }} pr-1"></em>
               <span>{{ $_menu['title'] }}</span>
             </a>
@@ -27,11 +27,16 @@
     </div>
     <div class="main-content">
       <div class="main-content-header">
-        <i class="fas fa-bars" data-toggle="sidebar"></i>
+        <div class="header-icon-bar">
+          <i class="fas fa-bars" data-toggle="sidebar"></i>
+        </div>
       </div>
-      @yield('content')
+      <div class="main-content-info p-3">
+        @yield('content')
+      </div>
     </div>
   </div>
+  <div class="sidebar-overlay"></div>
   <script src="/js/admin.js"></script>
 </body>
 </html>
