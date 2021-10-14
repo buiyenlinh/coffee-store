@@ -17,8 +17,8 @@
           @foreach ($menu as $_menu)
           <li class="nav-item">
             <a class="nav-link" data-toggle="pill" href="{{ $_menu['link'] }}">
-              <em class="{{ $_menu['icon'] }}"></em>
-              {{ $_menu['title'] }}
+              <em class="{{ $_menu['icon'] }} pr-1"></em>
+              <span>{{ $_menu['title'] }}</span>
             </a>
           </li>
           @endforeach
@@ -26,8 +26,12 @@
       </div>
     </div>
     <div class="main-content">
+      <div class="main-content-header">
+        <i class="fas fa-bars" data-toggle="sidebar"></i>
+      </div>
       @yield('content')
     </div>
   </div>
+  <script src="/js/admin.js"></script>
 </body>
 </html>
