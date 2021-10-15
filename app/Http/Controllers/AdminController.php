@@ -53,19 +53,18 @@ class AdminController extends Controller
      * @param integer $id
      * @return integer
      */
-    private function getLevel($id = 0) {
+    private function getRole($id = 0) {
         if ($id == 0) {
             $id = Auth::user()->role_id;
         }
         $role = Role::find($id);
-        return $role->id;
+        return $role;
     }
 
     /**
      * Get menu info
      */
     private function getMenu() {
-        $level = $this->getLevel();
         $menu = [];
         $menu[] = [
             'link' => route('home', [], false),
@@ -102,15 +101,17 @@ class AdminController extends Controller
     /**
      * Get info after login
      */
-    private function getData() {
+    public function getData() {
         $user = Auth::user()->toArray();
         $menu = $this->getMenu();
+        $role = $this->getRole();
         if (empty($user['avatar'])) {
             $user['avatar'] = 'https://i.pinimg.com/736x/4e/db/ff/4edbff0d52c0d2f8e85fe0c0cc903993.jpg';
         }
         $data = [
             'user' => $user,
             'menu' => $menu,
+            'role' => $role,
             'title' => null
         ];
 
@@ -128,12 +129,116 @@ class AdminController extends Controller
 
     /**
      * Places page
+     * get table list
      */
-    public function viewPlace() {
+    public function viewPlace(Request $request) {
+        $data_form = [];
+        if ($request->has('add')) {
+            $data_form = [
+                'id' => null,
+                'name' => null,
+                'active' => null
+            ];
+        } 
+        if ($request->has('edit')) {
+            $place = Place::find($request->edit);
+            $data_form = $place;
+        }
         $data = $this->getData();
         $data['title'] = 'Khu vực';
+        $data['data_form'] = $data_form;
         $places = Place::all();
         $data['places'] = $places->toArray();
         return view('admin.place', $data);
+    }
+
+    /**
+     * Add place
+     */
+    public function addPlace(Request $request) {
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền thực hiện');
+        }
+
+        $request->validate(
+            [ 'name' => 'required|unique:places' ],
+            [
+                'name.required' => 'Tên khu vực là bắt buộc',
+                'name.unique' => 'Tên khu vực này đã tồn tại'
+            ]
+        );
+        
+        $name = $request->old('name');
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+
+        $place = Place::create([
+            'name' => $request->input('name'),
+            'active' => $active
+        ]);
+        return redirect()->route('place');
+    }
+
+    /**
+     * Edit place
+     */
+    public function editPlace(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền thực hiện');
+        }
+
+        $request->validate(
+            [ 'name' => 'required' ],
+            ['name.required' => 'Tên khu vực là bắt buộc']
+        );
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+        $name = $request->old('name');
+        $place_edit = Place::where('id', '!=' , $id)
+            ->where('name', $request->input('name'))->get()->toArray();
+
+        if(!empty($place_edit)) {
+            return back()->withInput()->with('error_name', 'Tên khu vực đã tồn tại');
+        }
+        
+        $place = Place::where('id', $id)
+            ->update([
+                'name' => $request->input('name'),
+                'active' => $active
+            ]);
+        return redirect()->route('place');
+    }
+
+    /**
+     * Delete place
+     */
+    public function deletePlace(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return response()->json([
+                'status' => 'ERR',
+                'error' => 'Tài khoản của bạn không có quyền xóa'
+            ]);
+        }
+        $place = Place::find($id);
+        $place->delete();
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('place', [], false)
+        ]);
     }
 }
