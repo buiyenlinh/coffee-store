@@ -1,5 +1,5 @@
 function deletePlace(url, id) {
-  if (!confirm('Bạn chắc chắn muốn xóa khu vực này ?')) {
+  if (!confirm('Bạn chắc chắn muốn xóa?')) {
     return false;
   }
 
