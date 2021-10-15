@@ -5,19 +5,19 @@
     <div class="row">
       <div class="col-md-5 col-sm-12 col-xs-12">
         @if($data_form['id'] > 0)
-          <h3>Cập nhật khu vực</h3>
+          <h3>Cập nhật loại sản phẩm</h3>
         @else
-          <h3>Thêm khu vực</h3>
+          <h3>Thêm loại sản phẩm</h3>
         @endif
-        <div class="form-add-place">
+        <div class="form-add-category">
           @if($data_form['id'] > 0)
-          <form action="/admin/place/edit?id={{$data_form['id']}}" method="POST">
+          <form action="/admin/category/edit?id={{$data_form['id']}}" method="POST">
           @else
-          <form action="/admin/place/add" method="POST">
+          <form action="/admin/category/add" method="POST">
           @endif
             @csrf
             <div class="form-group">
-              <label for="">Tên khu vực:</label>
+              <label for="">Tên loại sản phẩm:</label>
               <input type="text" name="name" class="form-control" value="{{ old('name', $data_form['name']) }}">
               @error('name')
                 <div class="text-danger">
@@ -49,7 +49,7 @@
                   Thêm
                 @endif
               </button>
-              <a class="btn btn-secondary" href="/admin/place">Trở lại</a>
+              <a class="btn btn-secondary" href="/admin/category">Trở lại</a>
             </div>
           </form>
         </div>
@@ -57,36 +57,31 @@
     </div>
   @else
   <div class="d-flex justify-content-between pb-2">
-    <h3 class="mb-0">Danh sách khu vực</h3>
-    <a href="/admin/place?add" class="btn btn-primary text-light">
-      Thêm khu vực
-    </a>
+    <h3 class="mb-0">Danh sách loại sản phẩm</h3>
+    <a href="/admin/category?add" class="btn btn-primary">Thêm loại</a>
   </div>
-  
   <div class="table-responsive">
-    <table class="table table-striped table-bordered table-hover">
+    <table class="table table-hover table-striped table-bordered">
       <thead class="bg-primary text-light">
-        <th>Tên khu vực</th>
+        <th>Tên loại sản phẩm</th>
         <th>Hoạt động</th>
         <th>Thao tác</th>
       </thead>
       <tbody>
-        @foreach ($places as $_place)
-            <tr>
-              <td>{{ $_place['name'] }}</td>
-              <td>
-                @if($_place['active']) Đã kích hoạt @else Chưa kích hoạt @endif
-              </td>
-              <td>
-                <a onclick="deletePlace('/admin/place/delete', {{ $_place['id'] }})" style="cursor: pointer;">
-                  <i class="fas fa-trash-alt text-danger"></i>
-                </a>
-                <a href="?edit={{ $_place['id'] }}">
-                  <i class="fas fa-edit text-primary"></i>
-                </a>
-              </td>
-            </tr>
-          @endforeach
+        @foreach ($categories as $_category)
+          <tr>
+            <td>{{ $_category['name'] }}</td>
+            <td>@if($_category['active']) Đã kích hoạt @else Chưa kích hoạt @endif</td>
+            <td>
+              <a onclick="deletePlace('/admin/category/delete', {{ $_category['id'] }})" style="cursor: pointer;">
+                <i class="fas fa-trash-alt text-danger"></i>
+              </a>
+              <a href="?edit={{ $_category['id'] }}">
+                <i class="fas fa-edit text-primary"></i>
+              </a>
+            </td>
+          </tr>
+        @endforeach
       </tbody>
     </table>
   </div>

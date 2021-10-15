@@ -96,6 +96,12 @@ html, body {
   padding: 10px;
 }
 
+/* PLACE CATEGORY */
+.form-add-category {
+  border: 1px solid #3490dc;
+  background-color: #fff;
+  padding: 10px;
+}
 
 
 /* RESPONSIVE */

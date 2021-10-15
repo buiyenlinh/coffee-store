@@ -22,6 +22,12 @@ Route::prefix('admin')->group(function() {
         Route::post('delete', 'AdminController@deletePlace');
     });
 
+    Route::prefix('category')->group(function() {
+        Route::get('/', 'AdminController@viewCategory')->name('category');
+        Route::post('add', 'AdminController@addCategory');
+        Route::post('edit', 'AdminController@editCategory');
+        Route::post('delete', 'AdminController@deleteCategory');
+    });
 
     Route::prefix('auth')->group(function() {
         Route::post('login', 'AdminController@login');

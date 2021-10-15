@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Place;
+use App\Models\Category;
 
 class AdminController extends Controller
 {
@@ -85,7 +86,7 @@ class AdminController extends Controller
         ];
 
         $menu[] = [
-            'link' => route('home', [], false),
+            'link' => route('category', [], false),
             'title' => 'Loại sản phẩm',
             'icon' => 'fas fa-clipboard-list'
         ];
@@ -158,7 +159,7 @@ class AdminController extends Controller
     public function addPlace(Request $request) {
         $role = $this->getRole();
         if ($role->level == 3) {
-            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền thực hiện');
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền thêm');
         }
 
         $request->validate(
@@ -239,6 +240,119 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'redirect' => route('place', [], false)
+        ]);
+    }
+
+    /**
+     * CATEGORY PAGE
+     * view category page
+     */
+    public function viewCategory(Request $request) {
+        $data_form = [];
+        if ($request->has('add')) {
+            $data_form = [
+                'id' => null,
+                'name' => null,
+                'active' => null
+            ];
+        } 
+        if ($request->has('edit')) {
+            $category = Category::find($request->edit);
+            $data_form = $category;
+        }
+        $data = $this->getData();
+        $data['title'] = 'Loại sản phẩm';
+        $data['categories'] = Category::all()->toArray();
+        $data['data_form'] = $data_form;
+        return view('admin.category', $data);
+    }
+
+    /**
+     * add category
+     */
+    public function addCategory(Request $request) {
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error', 'Tài khoản của bạn không có quyền thêm');
+        }
+        $request->validate(
+            [ 'name' => 'required|unique:categories' ],
+            [
+                'name.required' => 'Tên loại sản phẩm là bắt buộc',
+                'name.unique' => 'Tên loại sản phẩm này đã tồn tại'
+            ]
+        );
+        
+        $name = $request->old('name');
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+        
+        $caterogy = Category::create([
+            'name' => $request->input('name'),
+            'active' => $active
+        ]);
+        return redirect()->route('category');
+    }
+
+    /**
+     * Edit category
+     */
+    public function editCategory(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền cập nhật');
+        }
+
+        $request->validate(
+            ['name' => 'required'],
+            ['name.required' => 'Tên loại sản phẩm là bắt buộc']
+        );
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+        $name = $request->old('name');
+        $category_edit = Category::where('id', '!=' , $id)
+            ->where('name', $request->input('name'))->get()->toArray();
+
+        if(!empty($category_edit)) {
+            return back()->withInput()->with('error_name', 'Tên loại sản phẩm đã tồn tại');
+        }
+        
+        $category = Category::where('id', $id)
+            ->update([
+                'name' => $request->input('name'),
+                'active' => $active
+            ]);
+        return redirect()->route('category');
+    }
+
+    /**
+     * Delete category
+     */
+    public function deleteCategory(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return response()->json([
+                'status' => 'ERR',
+                'error' => 'Tài khoản của bạn không có quyền xóa'
+            ]);
+        }
+        $category = Category::find($id);
+        $category->delete();
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('category', [], false)
         ]);
     }
 }
