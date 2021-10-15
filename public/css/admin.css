@@ -21,7 +21,7 @@ html, body {
   min-height: 100vh;
   transition: all ease-in-out 0.4s;
   z-index: 100;
-  background-color: darkcyan;
+  background-color: #3490dc;
 }
 
 .wrapper-sidebar-mini .main-sidebar {
@@ -45,8 +45,8 @@ html, body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  margin-left: 65px;
-  width: calc(100% - 65px);
+  margin-left: 60px;
+  width: calc(100% - 60px);
 }
 
 .sidebar ul,
@@ -89,6 +89,16 @@ html, body {
   cursor: pointer;
 }
 
+/* PLACE PAGE */
+.form-add-place {
+  border: 1px solid #3490dc;
+  background-color: #fff;
+  padding: 10px;
+}
+
+
+
+/* RESPONSIVE */
 @media (max-width: 767px) {
   .main-sidebar {
     left: -200px;

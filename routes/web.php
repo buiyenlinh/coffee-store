@@ -15,7 +15,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->group(function() {
     Route::get('login', 'AdminController@viewLogin')->name('login');
     Route::get('/', 'AdminController@viewHome')->name('home');
-    Route::get('place', 'AdminController@viewPlace')->name('place');
+    Route::prefix('place')->group(function() {
+        Route::get('/', 'AdminController@viewPlace')->name('place');
+        Route::post('add', 'AdminController@addPlace');
+        Route::post('edit', 'AdminController@editPlace');
+        Route::post('delete', 'AdminController@deletePlace');
+    });
+
 
     Route::prefix('auth')->group(function() {
         Route::post('login', 'AdminController@login');
