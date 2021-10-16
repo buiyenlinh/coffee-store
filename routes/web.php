@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->group(function() {
     Route::get('login', 'AdminController@viewLogin')->name('login');
     Route::get('/', 'AdminController@viewHome')->name('home');
+    Route::prefix('auth')->group(function() {
+        Route::post('login', 'AdminController@login');
+    });
+
     Route::prefix('place')->group(function() {
         Route::get('/', 'AdminController@viewPlace')->name('place');
         Route::post('add', 'AdminController@addPlace');
@@ -36,8 +40,11 @@ Route::prefix('admin')->group(function() {
         Route::post('delete', 'AdminController@deleteTable');
     });
 
-    Route::prefix('auth')->group(function() {
-        Route::post('login', 'AdminController@login');
+    Route::prefix('product')->group(function() {
+        Route::get('/', 'AdminController@viewProduct')->name('product');
+        Route::post('add', 'AdminController@addProduct');
+        Route::post('edit', 'AdminController@editProduct');
+        Route::post('delete', 'AdminController@deleteProduct');
     });
 });
 

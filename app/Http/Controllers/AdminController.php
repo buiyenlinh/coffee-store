@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Place;
 use App\Models\Category;
 use App\Models\Table;
+use App\Models\Product;
 
 class AdminController extends Controller
 {
@@ -81,7 +82,7 @@ class AdminController extends Controller
         ];
 
         $menu[] = [
-            'link' => route('home', [], false),
+            'link' => route('product', [], false),
             'title' => 'Sản phẩm',
             'icon' => 'fas fa-coffee'
         ];
@@ -393,9 +394,6 @@ class AdminController extends Controller
     /**
      * add table
      */
-    /**
-     * add category
-     */
     public function addTable(Request $request) {
         $role = $this->getRole();
         if ($role->level == 3) {
@@ -484,6 +482,164 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'redirect' => route('table', [], false)
+        ]);
+    }
+
+    /**
+     * PRODUCT PAGE
+     */
+    public function viewProduct(Request $request) {
+        $data_form = [];
+        if ($request->has('add')) {
+            $data_form = [
+                'id' => null,
+                'name' => null,
+                'price' => null,
+                'active' => null,
+                'status' => null,
+                'category_id' => null
+            ];
+        }
+
+        if ($request->has('edit')) {
+            $product = Product::find($request->edit);
+            $data_form = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->price,
+                'active' => $product->active,
+                'status' => $product->status,
+                'category_id' => $product->category_id
+            ];
+        }
+
+        $data = $this->getData();
+        $data['title'] = 'Danh sách sản phẩm';
+        $data['products'] = Product::all();
+        $data['data_form'] = $data_form;
+        $data['categories'] = Category::all();
+        return view('admin.product', $data);
+    }
+
+     /**
+     * add Product
+     */
+    public function addProduct(Request $request) {
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền thêm');
+        }
+        $request->validate(
+            ['name' => 'required|unique:products'],
+            [
+                'name.required' => 'Tên sản phẩm là bắt buộc',
+                'name.unique' => 'Tên sản phẩm này đã tồn tại'
+            ]
+        );
+        
+        $old_name = $request->old('name');
+        $old_price = $request->old('price');
+        $price = $request->price;
+        if ($price == null) {
+            return back()->withInput()->with('error_price', 'Giá sản phẩm là bắt buộc');
+        }
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+
+        $status = $request->input('status');
+        if($status == null) {
+            $status = 0;
+        } else {
+            $status = 1;
+        }
+        
+        $product = Product::create([
+            'name' => $request->input('name'),
+            'price' => $request->input('price'),
+            'active' => $active,
+            'category_id' => $request->input('category_id'),
+            'status' => $status
+        ]);
+        return redirect()->route('product');
+    }
+
+    /**
+     * Edit Product
+     */
+    public function editProduct(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền cập nhật');
+        }
+
+        $request->validate(
+            [ 'name' => 'required' ],
+            ['name.required' => 'Tên sản phẩm là bắt buộc']
+        );
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+
+        $status = $request->input('status');
+        if ($status == null) {
+            $status = 0;
+        } else {
+            $status = 1;
+        }
+
+        $price = $request->price;
+        if ($price == null) {
+            return back()->withInput()->with('error_price', 'Giá sản phẩm là bắt buộc');
+        }
+
+        $old_name = $request->old('name');
+        $old_price = $request->old('price');
+
+        $product_edit = Product::where('id', '!=' , $id)
+            ->where('name', $request->input('name'))->get()->toArray();
+
+        if(!empty($product_edit)) {
+            return back()->withInput()->with('error_name', 'Tên sản phẩm đã tồn tại');
+        }
+
+        $product = Product::where('id', $id)
+            ->update([
+                'name' => $request->input('name'),
+                'price' => $request->input('price'),
+                'active' => $active,
+                'category_id' => $request->input('category_id'),
+                'status' => $status
+            ]);
+        return redirect()->route('product');
+    }
+
+    /**
+     * Delete Product
+     */
+    public function deleteProduct(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return response()->json([
+                'status' => 'ERR',
+                'error' => 'Tài khoản của bạn không có quyền xóa'
+            ]);
+        }
+        $product = Product::find($id);
+        $product->delete();
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('product', [], false)
         ]);
     }
 }
