@@ -1,4 +1,4 @@
-function deletePlace(url, id) {
+function handleDelete(url, id) {
   if (!confirm('Bạn chắc chắn muốn xóa?')) {
     return false;
   }
