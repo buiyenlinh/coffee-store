@@ -78,7 +78,7 @@
                 @if($_place['active']) Đã kích hoạt @else Chưa kích hoạt @endif
               </td>
               <td>
-                <a onclick="deletePlace('/admin/place/delete', {{ $_place['id'] }})" style="cursor: pointer;">
+                <a onclick="handleDelete('/admin/place/delete', {{ $_place['id'] }})" style="cursor: pointer;">
                   <i class="fas fa-trash-alt text-danger"></i>
                 </a>
                 <a href="?edit={{ $_place['id'] }}">
