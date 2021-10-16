@@ -29,6 +29,13 @@ Route::prefix('admin')->group(function() {
         Route::post('delete', 'AdminController@deleteCategory');
     });
 
+    Route::prefix('table')->group(function() {
+        Route::get('/', 'AdminController@viewTable')->name('table');
+        Route::post('add', 'AdminController@addTable');
+        Route::post('edit', 'AdminController@editTable');
+        Route::post('delete', 'AdminController@deleteTable');
+    });
+
     Route::prefix('auth')->group(function() {
         Route::post('login', 'AdminController@login');
     });

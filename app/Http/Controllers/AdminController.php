@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Place;
 use App\Models\Category;
+use App\Models\Table;
 
 class AdminController extends Controller
 {
@@ -74,7 +75,7 @@ class AdminController extends Controller
         ];
 
         $menu[] = [
-            'link' => route('home', [], false),
+            'link' => route('table', [], false),
             'title' => 'Danh sách bàn',
             'icon' => 'fas fa-table'
         ];
@@ -353,6 +354,136 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'redirect' => route('category', [], false)
+        ]);
+    }
+
+    /**
+     * TABLE PAGE
+     */
+    public function viewTable(Request $request) {
+        $data_form = [];
+        if ($request->has('add')) {
+            $data_form = [
+                'id' => null,
+                'name' => null,
+                'active' => null,
+                'status' => null,
+                'place' => null
+            ];
+        }
+
+        if ($request->has('edit')) {
+            $table = Table::find( $request->edit);
+            $data_form = [
+                'id' => $table->id,
+                'name' => $table->name,
+                'active' => $table->active,
+                'status' => $table->status,
+                'place' => $table->place_id
+            ];
+        }
+        $data = $this->getData();
+        $data['title'] = 'Danh sách bàn';
+        $data['tables'] = Table::all();
+        $data['data_form'] = $data_form;
+        $data['places'] = Place::all()->toArray();
+        return view('admin.table', $data);
+    }
+
+    /**
+     * add table
+     */
+    /**
+     * add category
+     */
+    public function addTable(Request $request) {
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error', 'Tài khoản của bạn không có quyền thêm');
+        }
+        $request->validate(
+            ['name' => 'required|unique:tables'],
+            [
+                'name.required' => 'Tên bàn là bắt buộc',
+                'name.unique' => 'Tên bàn này đã tồn tại'
+            ]
+        );
+        
+        $name = $request->old('name');
+        $place = $request->old('place');
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+        
+        $table = Table::create([
+            'name' => $request->input('name'),
+            'active' => $active,
+            'place_id' => $request->input('place'),
+            'status' => 0
+        ]);
+        return redirect()->route('table');
+    }
+
+    /**
+     * Edit Table
+     */
+    public function editTable(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền cập nhật');
+        }
+
+        $request->validate(
+            [ 'name' => 'required' ],
+            ['name.required' => 'Tên bàn là bắt buộc']
+        );
+
+        $active = $request->input('active');
+        if ($active == null) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+
+        $name = $request->old('name');
+        $table_edit = Table::where('id', '!=' , $id)
+            ->where('name', $request->input('name'))->get()->toArray();
+
+        if(!empty($table_edit)) {
+            return back()->withInput()->with('error_name', 'Tên bàn đã tồn tại');
+        }
+
+        $table = Table::where('id', $id)
+            ->update([
+                'name' => $request->input('name'),
+                'active' => $active,
+                'place_id' => $request->input('place'),
+            ]);
+        return redirect()->route('table');
+    }
+
+    /**
+     * Delete table
+     */
+    public function deleteTable(Request $request) {
+        $id = $request->id;
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return response()->json([
+                'status' => 'ERR',
+                'error' => 'Tài khoản của bạn không có quyền xóa'
+            ]);
+        }
+        $table = Table::find($id);
+        $table->delete();
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('table', [], false)
         ]);
     }
 }
