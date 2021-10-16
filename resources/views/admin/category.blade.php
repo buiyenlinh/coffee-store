@@ -4,11 +4,7 @@
   @if($data_form)
     <div class="row">
       <div class="col-md-5 col-sm-12 col-xs-12">
-        @if($data_form['id'] > 0)
-          <h3>Cập nhật loại sản phẩm</h3>
-        @else
-          <h3>Thêm loại sản phẩm</h3>
-        @endif
+        <h3>{{ $data_form['id'] > 0 ? 'Cập nhật' : 'Thêm' }} loại sản phẩm</h3>
         <div class="form-add-category">
           @if($data_form['id'] > 0)
           <form action="/admin/category/edit?id={{$data_form['id']}}" method="POST">
@@ -73,7 +69,7 @@
             <td>{{ $_category['name'] }}</td>
             <td>@if($_category['active']) Đã kích hoạt @else Chưa kích hoạt @endif</td>
             <td>
-              <a onclick="deletePlace('/admin/category/delete', {{ $_category['id'] }})" style="cursor: pointer;">
+              <a onclick="handleDelete('/admin/category/delete', {{ $_category['id'] }})" style="cursor: pointer;">
                 <i class="fas fa-trash-alt text-danger"></i>
               </a>
               <a href="?edit={{ $_category['id'] }}">
