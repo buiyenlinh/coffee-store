@@ -48,7 +48,7 @@
               <label for="">Loại sản phẩm:</label>
               <select name="category_id" id="" class="form-control">
                 @foreach($categories as $_category)
-                  <option value="{{ $_category['id'] }} {{ $_category['id'] == $data_form['category_id'] ? 'selected' : '' }} ">{{ $_category['name'] }}</option>
+                  <option value="{{ $_category['id'] }}" {{ $_category['id'] == $data_form['category_id'] ? 'selected' : '' }} >{{ $_category['name'] }}</option>
                 @endforeach
               </select>
             </div>
