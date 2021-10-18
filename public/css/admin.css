@@ -12,6 +12,12 @@ table td {
   white-space: nowrap;
 }
 
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 .wrapper {
   position: relative;
   height: 100%;
@@ -101,6 +107,39 @@ table td {
   border: 1px solid #3490dc;
   background-color: #fff;
   padding: 10px;
+}
+
+
+.order-place li {
+  cursor: pointer;
+}
+
+.order-place li:hover b {
+  color: rgb(10, 51, 104);
+}
+
+.order-place .nav-pills .nav-link.active {
+  padding: 5px 15px;
+  border-radius: 0px;
+}
+
+.order-table .order-table-list {
+  margin: 0;
+}
+
+.order-table-list li {
+  border: 1px solid #ddd;
+  text-align: center;
+  cursor: pointer;
+}
+.order-table-list img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.order-table-list li:hover {
+  box-shadow: 0px 3px 10px 5px #ddd;
 }
 
 

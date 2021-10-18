@@ -46,6 +46,11 @@ Route::prefix('admin')->group(function() {
         Route::post('edit', 'AdminController@editProduct');
         Route::post('delete', 'AdminController@deleteProduct');
     });
+
+    Route::prefix('order')->group(function() {
+        Route::get('/', 'AdminController@viewOrder')->name('order');
+        Route::get('search-table', 'AdminController@searchTable');
+    });
 });
 
 Route::get('/', function() {

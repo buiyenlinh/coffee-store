@@ -10,6 +10,8 @@ use App\Models\Place;
 use App\Models\Category;
 use App\Models\Table;
 use App\Models\Product;
+use App\Models\Bill;
+use App\Models\Bill_Detail;
 
 class AdminController extends Controller
 {
@@ -73,6 +75,12 @@ class AdminController extends Controller
             'link' => route('home', [], false),
             'title' => 'Trang chủ',
             'icon' => 'fas fa-tachometer-alt'
+        ];
+
+        $menu[] = [
+            'link' => route('order', [], false),
+            'title' => 'Đặt hàng',
+            'icon' => 'fas fa-folder-plus'
         ];
 
         $menu[] = [
@@ -640,6 +648,35 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'redirect' => route('product', [], false)
+        ]);
+    }
+
+
+    /**
+     * ORDER PAGE
+     * view order
+     */
+    public function viewOrder() {
+        $data = $this->getData();
+        $data['places'] = Place::all();
+        $data['products'] = Product::all();
+        return view('admin.order', $data);
+    }
+
+    /**
+     * find table with place_id
+     */
+    public function searchTable(Request $request) {
+        $tables = [];
+        if ($request->id == 0) {
+            $tables = Table::all();
+        } else {
+            $tables = Table::where('place_id', '=', $request->id)->get()->toArray();
+        }
+        
+        return response()->json([
+            'status' => 'OK',
+            'tables' => $tables
         ]);
     }
 }
