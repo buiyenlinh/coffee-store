@@ -8,7 +8,7 @@
   <script src="{{ asset('js/app.js') }}"></script>  
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="/css/admin.css">
-  <title>{{ $title ?? 'Your site title' }}</title>
+  <title>Quản trị - {{ $title ?? 'Your site title' }}</title>
 </head>
 <body>
   <div class="wrapper">

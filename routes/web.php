@@ -50,6 +50,8 @@ Route::prefix('admin')->group(function() {
     Route::prefix('order')->group(function() {
         Route::get('/', 'AdminController@viewOrder')->name('order');
         Route::get('search-table', 'AdminController@searchTable');
+        Route::get('get-bill-detail', 'AdminController@getBillDetail');
+        Route::get('get-product', 'AdminController@getProductByCategory');
     });
 });
 
