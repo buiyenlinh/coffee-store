@@ -3,10 +3,10 @@
 @section('content')
   <div class="order">
     <div class="row">
-      <div class="col-md-5 col-sm-8 col-xs-8">
+      <div class="col-md-6 col-sm-6 col-12">
         <div class="order-place">
           <ul class="nav nav-pills">
-            <li 
+            <li
               class="nav-item mr-3"
               onclick="searchTable('/admin/order/search-table', 0)"
             >
@@ -27,32 +27,120 @@
         </div>
       </div>
 
-      <div class="col-md-2 col-sm-4 col-xs-4">
-        <table class="table table-hover table-striped">
-          <thead class="bg-primary text-light">
-            <th>Sản phẩm</th>
-          </thead>
-          <tbody>
-            @foreach($products as $_product)
-              <tr>
-                <td>{{ $_product['name'] }}</td>
-              </tr>
+      <div class="col-md-6 col-sm-6 col-12">
+        <div class="order-category">
+          <ul class="nav nav-pills">
+            <li
+              class="nav-item"
+              onclick="getProductByCategory('/admin/order/get-product', 0)"
+            >
+              <b class="nav-link active" data-toggle="pill">Tất cả</b>
+            </li>
+            @foreach ($categories as $_category)
+            <li 
+              class="nav-item mr-3"
+              onclick="getProductByCategory('/admin/order/get-product', {{ $_category['id'] }})"
+            >
+              <b class="nav-link" data-toggle="pill">{{ $_category['name'] }}</b>
+            </li>
             @endforeach
-          </tbody>
-        </table>
-      </div>
+          </ul>
+        </div>
 
-      <div class="col-md-5 col-sm-12 col-xs-12">
-        <div class="table-responsive">
-          <table class="table table-hover table-striped table-bordered">
-            <thead class="bg-primary text-light">
-              <th>Sản phẩm</th>
-              <th>Giá</th>
-              <th>Số lượng</th>
-            </thead>
-          </table>
+        <div class="order-product">
+          <div class="form-group">
+            <label for="">Sản phẩm:</label>
+            <select name="order-product-select" class="form-control order-product-select">
+              @foreach($products as $_product)
+                <option value="{{ $_product['id'] }}">{{ $_product['name'] }}</option>
+                @endforeach
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="">Số lượng</label>
+            <input type="number" class="form-control order_product_number" name="order_product_number" min="0">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-sm order-btn-submit" type="button">Thêm</button>
+          </div>
         </div>
       </div>
     </div>
+
+    <h3 class="table-name-select"></h3>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped table-bordered">
+        <thead class="bg-primary text-light">
+          <th>Sản phẩm</th>
+          <th>Giá</th>
+          <th>Số lượng</th>
+          <th>Thao tác</th>
+        </thead>
+        <tbody class="order-tbody-details"></tbody>
+      </table>
+    </div>
+    
+
+    <!-- <div class="modal fade" id="orderModal">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">This is title</h3>
+            <button class="close" data-dismiss="modal" type="button">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-2 col-sm-4 col-5">
+                <div class="order-category">
+                  <ul class="nav nav-pills flex-column">
+                    <li
+                      class="nav-item mr-3"
+                      onclick="getProductByCategory('/admin/order/get-product', 0)"
+                    >
+                      <b class="nav-link active" data-toggle="pill">Tất cả</b>
+                    </li>
+                    @foreach ($categories as $_category)
+                    <li 
+                      class="nav-item mr-3"
+                      onclick="getProductByCategory('/admin/order/get-product', {{ $_category['id'] }})"
+                    >
+                      <b class="nav-link" data-toggle="pill">{{ $_category['name'] }}</b>
+                    </li>
+                    @endforeach
+                  </ul>
+                </div>
+              </div>
+              <div class="col-md-3 col-sm-8 col-7">
+                <div class="table-responsive">
+                  <div class="order-product">
+                    <select name="order-product-select" class="form-control order-product-select">
+                      @foreach($products as $_product)
+                        <option value="{{ $_product['id'] }}">{{ $_product['name'] }}</option>
+                        @endforeach
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-7 col-sm-12 col-12">
+                <div class="table-responsive">
+                  <table class="table table-hover table-striped table-bordered">
+                    <thead class="bg-primary text-light">
+                      <th>Sản phẩm</th>
+                      <th>Giá</th>
+                      <th>Số lượng</th>
+                    </thead>
+                    <tbody class="order-tbody-details"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Xong</button>
+          </div>
+        </div>
+      </div>
+    </div> -->
   </div>
 @endsection

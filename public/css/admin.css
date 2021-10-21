@@ -109,8 +109,8 @@ ul {
   padding: 10px;
 }
 
-
-.order-place li {
+.order-place li,
+.order-category li {
   cursor: pointer;
 }
 
@@ -118,7 +118,8 @@ ul {
   color: rgb(10, 51, 104);
 }
 
-.order-place .nav-pills .nav-link.active {
+.order-place .nav-pills .nav-link.active,
+.order-category .nav-pills .nav-link.active {
   padding: 5px 15px;
   border-radius: 0px;
 }
@@ -141,6 +142,12 @@ ul {
 .order-table-list li:hover {
   box-shadow: 0px 3px 10px 5px #ddd;
 }
+
+.order-category li b.active {
+  border-radius: 0;
+}
+
+
 
 
 /* RESPONSIVE */

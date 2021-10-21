@@ -11,7 +11,7 @@ use App\Models\Category;
 use App\Models\Table;
 use App\Models\Product;
 use App\Models\Bill;
-use App\Models\Bill_Detail;
+use App\Models\Detail;
 
 class AdminController extends Controller
 {
@@ -660,6 +660,8 @@ class AdminController extends Controller
         $data = $this->getData();
         $data['places'] = Place::all();
         $data['products'] = Product::all();
+        $data['categories'] = Category::all();
+        $data['title'] = 'Đặt hàng';
         return view('admin.order', $data);
     }
 
@@ -677,6 +679,110 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'tables' => $tables
+        ]);
+    }
+
+
+    public function getDetailByBillId($id) {
+        $details = Detail::where('bill_id', '=', $id)->get()->toArray();
+        $response = [];
+        foreach($details as $_detail) {
+            $dt = $_detail;
+            $product = Product::find($_detail['product_id']);
+            $response[] = [
+                'dt' => $dt,
+                'product' => $product
+            ];
+        };
+            
+        return $response;
+    }
+    /**
+     * get bill detail by table_id
+     */
+    public function getBillDetail(Request $request) {
+        $bill = Bill::where('table_id', '=', $request->id)
+            ->where('status', '=', 0)->first();
+        $response = [];
+        if ($bill) {
+            $response = $this->getDetailByBillId($bill->id);
+        }
+        
+        return response()->json([
+            'status' => 'OK',
+            'details' => $response
+        ]);
+    } 
+
+    /**
+     * get product with category_id
+     */
+    public function getProductByCategory(Request $request) {
+        $products = [];
+        if ($request->id == 0) {
+            $products = Product::all();
+        } else {
+            $products = Product::where('category_id', '=', $request->id)->get()->toArray();
+        }
+        
+        return response()->json([
+            'status' => 'OK',
+            'products' => $products
+        ]);
+    }
+
+    /**
+     * add product in bill
+     */
+    public function addProductInBill(Request $request) {
+        $table_id = $request->table_id;
+        $product_id = $request->product_id;
+        $number = $request->number;
+
+        $bill_id = 0;
+        $bill = Bill::where('table_id', '=', $table_id)
+            ->where('status', '=', 0)
+            ->first();
+        if (!$bill) {
+            $bill_id = Bill::create([
+                'table_id' => $table_id,
+                'user_id' => 1,
+                'status' => 0
+            ])->id;
+
+            // Cập nhật status của table
+            Table::where('id', '=', $table_id)
+                ->update(['status' => 1]);
+            
+        } else {
+            $bill_id = $bill->id;
+        }
+
+        Detail::create([
+            'bill_id' => $bill_id,
+            'product_id' => $product_id,
+            'number' => $number
+        ]);
+
+        $response = $this->getDetailByBillId($bill_id);
+
+        return response()->json([
+            'status' => 'OK',
+            'details' => $response
+        ]);
+    }
+
+    /**
+     * delete product in bill
+     */
+    public function deleteProductInBill(Request $request) {
+        $id = $request->id;
+        $detail = Detail::find($id);
+        $detail->delete();
+
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('order', [], false)
         ]);
     }
 }
