@@ -778,8 +778,51 @@ class AdminController extends Controller
     public function deleteProductInBill(Request $request) {
         $id = $request->id;
         $detail = Detail::find($id);
+        $bill_id = $detail->bill_id;
         $detail->delete();
 
+        $response = $this->getDetailByBillId($bill_id);
+
+        return response()->json([
+            'act' => 'delete',
+            'status' => 'OK',
+            'details' => $response
+        ]);
+    }
+
+    /**
+     * update product in bill
+     */
+    function updateProductInBill(Request $request) {
+        $table_id = $request->table_id;
+        $product_id = $request->product_id;
+        $number = $request->number;
+        $detail_id = $request->detail_id;
+        $bill_id = Detail::find($detail_id)->bill_id;
+        Detail::where('id', '=', $detail_id)
+            ->update(['product_id' => $product_id, 'number' => $number]);
+        
+        $response = $this->getDetailByBillId($bill_id);
+        return response()->json([
+            'status' => 'OK',
+            'details' => $response
+        ]);
+    }
+
+    /**
+     * cancel table
+     */
+    function cancelTable(Request $request) {
+        $table_id = $request->id;
+        $bill = Bill::where('table_id', '=', $table_id)
+            ->where('status', '=', 0)->get()->toArray();
+        
+        $bill_delete = Bill::find($bill[0]['id']);
+        $bill_delete->delete();
+
+        Table::where('id', $table_id)
+            ->update(['status' => 0]);
+            
         return response()->json([
             'status' => 'OK',
             'redirect' => route('order', [], false)

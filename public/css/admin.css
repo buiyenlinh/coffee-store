@@ -147,7 +147,15 @@ ul {
   border-radius: 0;
 }
 
+.order-table {
+  max-height: 250px;
+  overflow: auto;
+}
 
+.active-false {
+  background: #ccc;
+  box-shadow: none !important;
+}
 
 
 /* RESPONSIVE */
