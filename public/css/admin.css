@@ -109,8 +109,8 @@ ul {
   padding: 10px;
 }
 
-
-.order-place li {
+.order-place li,
+.order-category li {
   cursor: pointer;
 }
 
@@ -118,7 +118,8 @@ ul {
   color: rgb(10, 51, 104);
 }
 
-.order-place .nav-pills .nav-link.active {
+.order-place .nav-pills .nav-link.active,
+.order-category .nav-pills .nav-link.active {
   padding: 5px 15px;
   border-radius: 0px;
 }

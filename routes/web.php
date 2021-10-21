@@ -52,6 +52,8 @@ Route::prefix('admin')->group(function() {
         Route::get('search-table', 'AdminController@searchTable');
         Route::get('get-bill-detail', 'AdminController@getBillDetail');
         Route::get('get-product', 'AdminController@getProductByCategory');
+        Route::post('add', 'AdminController@addProductInBill');
+        Route::post('delete', 'AdminController@deleteProductInBill');
     });
 });
 
