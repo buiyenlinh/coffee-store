@@ -13,8 +13,12 @@ use App\Models\Product;
 use App\Models\Bill;
 use App\Models\Detail;
 
+use App\Http\InitData;
+
 class AdminController extends Controller
 {
+    use InitData;
+    // Sử dụng $this->getInt like this ^ ^
     /**
     *    login page
     */
@@ -230,6 +234,11 @@ class AdminController extends Controller
                 'name' => $request->input('name'),
                 'active' => $active
             ]);
+
+        $table = Table::where('place_id', $id)
+            ->update([
+                'active_parent' => $active
+            ]);
         return redirect()->route('place');
     }
 
@@ -343,6 +352,11 @@ class AdminController extends Controller
                 'name' => $request->input('name'),
                 'active' => $active
             ]);
+        
+        $product = Product::where('category_id', $id)
+            ->update([
+                'active_parent' => $active
+            ]);
         return redirect()->route('category');
     }
 
@@ -425,9 +439,13 @@ class AdminController extends Controller
             $active = 1;
         }
         
+        $place_check = Place::where('id', '=', $request->input('place'))->get()->toArray();
+        $active_parent = $place_check[0]['active'];
+
         $table = Table::create([
             'name' => $request->input('name'),
             'active' => $active,
+            'active_parent' => $active_parent,
             'place_id' => $request->input('place'),
             'status' => 0
         ]);
@@ -566,10 +584,14 @@ class AdminController extends Controller
             $status = 1;
         }
         
+        $category_check = Category::where('id', '=', $request->input('category_id'))->get()->toArray();
+        $active_parent = $category_check[0]['active'];
+
         $product = Product::create([
             'name' => $request->input('name'),
             'price' => $request->input('price'),
             'active' => $active,
+            'active_parent' => $active_parent,
             'category_id' => $request->input('category_id'),
             'status' => $status
         ]);
@@ -669,6 +691,7 @@ class AdminController extends Controller
      * find table with place_id
      */
     public function searchTable(Request $request) {
+        
         $tables = [];
         if ($request->id == 0) {
             $tables = Table::all();
@@ -817,6 +840,13 @@ class AdminController extends Controller
         $bill = Bill::where('table_id', '=', $table_id)
             ->where('status', '=', 0)->get()->toArray();
         
+        if (!$bill) {
+            return response()->json([
+                'status' => 'ERR',
+                'message' => 'Bàn này đang trống'
+            ]);
+        }
+
         $bill_delete = Bill::find($bill[0]['id']);
         $bill_delete->delete();
 
@@ -826,6 +856,57 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'redirect' => route('order', [], false)
+        ]);
+    }
+
+    /**
+     * pay table
+     */
+    public function payTable(Request $request) {
+        $table_id = $request->id;
+        $bill = Bill::where('table_id', '=', $table_id)
+            ->where('status', '=', 0)->get()->toArray();
+
+        if (!$bill) {
+            return response()->json([
+                'status' => 'ERR',
+                'message' => 'Bàn này chưa có sản phẩm. Vui lòng thêm trước khi thanh toán.'
+            ]);
+        }
+
+        Table::where('id', '=', $table_id)
+            ->update(['status' => 0]);
+        
+        Bill::where('table_id', '=', $table_id)
+            ->where('status', '=', 0)
+            ->update(['status' => 1]);
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('order', [], false)
+        ]);
+    }
+
+    /**
+     * get table list for move table
+     */
+    public function getTableMove(Request $request) {
+        $id = $request->table_id;
+        $table = Table::find($id)->toArray();
+        
+        if (!$table['status']) {
+            return response()->json([
+                'status' => 'ERR',
+                'message' => $table['name'] . ' trống'
+            ]);
+        }
+
+        $response = Table::where('id', '!=', $id)
+            ->where('status', '=', 0)
+            ->get()
+            ->toArray();
+        return response()->json([
+            'status' => 'OK',
+            'response' => $response
         ]);
     }
 }

@@ -56,6 +56,8 @@ Route::prefix('admin')->group(function() {
         Route::post('update', 'AdminController@updateProductInBill');
         Route::post('delete', 'AdminController@deleteProductInBill');
         Route::post('cancel-table', 'AdminController@cancelTable');
+        Route::post('pay', 'AdminController@payTable');
+        Route::post('get-table-move', 'AdminController@getTableMove');
     });
 });
 

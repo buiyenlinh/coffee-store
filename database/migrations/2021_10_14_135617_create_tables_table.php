@@ -18,6 +18,7 @@ class CreateTablesTable extends Migration
             $table->string('name')->unique();
             $table->boolean('status');
             $table->boolean('active');
+            $table->boolean('active_parent');
             $table->foreignId('place_id')
                 ->constrained('places')
                 ->unsigned()

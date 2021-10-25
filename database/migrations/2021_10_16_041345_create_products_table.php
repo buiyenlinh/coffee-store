@@ -19,6 +19,7 @@ class CreateProductsTable extends Migration
             $table->integer('price');
             $table->boolean('status');
             $table->boolean('active');
+            $table->boolean('active_parent');
             $table->foreignId('category_id')
                 ->constrained('categories')
                 ->unsigned()

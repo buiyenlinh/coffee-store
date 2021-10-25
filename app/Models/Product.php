@@ -12,6 +12,7 @@ class Product extends Model
         'name',
         'price',
         'active',
+        'active_parent',
         'status',
         'category_id'
     ];
