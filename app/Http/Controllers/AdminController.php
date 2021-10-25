@@ -840,13 +840,6 @@ class AdminController extends Controller
         $bill = Bill::where('table_id', '=', $table_id)
             ->where('status', '=', 0)->get()->toArray();
         
-        if (!$bill) {
-            return response()->json([
-                'status' => 'ERR',
-                'message' => 'Bàn này đang trống'
-            ]);
-        }
-
         $bill_delete = Bill::find($bill[0]['id']);
         $bill_delete->delete();
 
@@ -888,6 +881,11 @@ class AdminController extends Controller
 
     /**
      * get table list for move table
+     * return {
+     *  status
+     *  response : danh sách các bàn để chuyển đến (bàn trống)
+     *  table-move: Thông tin bàn được chuyển
+     * }
      */
     public function getTableMove(Request $request) {
         $id = $request->table_id;
@@ -902,11 +900,37 @@ class AdminController extends Controller
 
         $response = Table::where('id', '!=', $id)
             ->where('status', '=', 0)
+            ->where('active_parent', 1)
             ->get()
             ->toArray();
+
         return response()->json([
             'status' => 'OK',
-            'response' => $response
+            'response' => $response,
+            'table_move' => $table
+        ]);
+    }
+
+    /**
+     * Thực hiện chuyển bàn
+     */
+    public function moveTable(Request $request) {
+        $table_move_id = $request->table_move_id;
+        $table_move_to_id = $request->table_move_to_id;
+        
+        Bill::where('table_id', $table_move_id)
+            ->where('status', 0)
+            ->update(['table_id' => $table_move_to_id]);
+
+        Table::where('id', $table_move_id)
+            ->update(['status' => 0]);
+        
+        Table::where('id', $table_move_to_id)
+            ->update(['status' => 1]);
+
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('order', [], false)
         ]);
     }
 }

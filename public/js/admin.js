@@ -7,6 +7,7 @@ var order = {
 
 var detail_id = null;
 var place_id = 0;
+var table_move_id = 0;
 
 function handleDelete(url, id) {
   if (!confirm('Bạn chắc chắn muốn xóa?')) {
@@ -268,7 +269,45 @@ function getTableMove(table_id) {
     if (json.status == 'ERR') {
       alert(json.message);
     } else {
-      console.log(json);
+      $('.order-table-name-move').val(json.table_move['name']);
+      table_move_id = json.table_move['id'];
+      for (let i in json.response) {
+        var option = document.createElement('option');
+        option.innerHTML = json.response[i]['name'];
+        option.setAttribute('value', json.response[i]['id']);
+        $('.order-move-to-table').append(option);
+      }
+      
+      $('.order-button-move-table').click();
+    }
+  })
+}
+
+
+// chuyển bàn
+function moveTable() {
+  var tableMoveTo = $('.order-move-to-table').val();
+  if (tableMoveTo == null || tableMoveTo <= 0) {
+    alert('Vui lòng chọn bàn chuyển đến');
+    return;
+  }
+
+  if (table_move_id <= 0 || table_move_id == null) {
+    alert("Đã xảy ra lỗi vui lòng thực hiện lại");
+    return;
+  }
+
+  $.ajax({
+    type: 'POST',
+    cache: false,
+    url: '/admin/order/move-table',
+    data: 'table_move_id=' + table_move_id + '&table_move_to_id=' + tableMoveTo,
+    dataType: 'json'
+  }).done(function(json) {
+    if (json.status == 'OK') {
+      if (json.redirect) {
+        window.location.href = json.redirect;
+      }
     }
   })
 }
@@ -322,5 +361,9 @@ $(function() {
     detail_id = null;
     $('.table-name-select').text('');
     $('.order-tbody-details').text('');
+  })
+
+  $('.order-btn-move-table').on('click', function() {
+    moveTable();
   })
 })
