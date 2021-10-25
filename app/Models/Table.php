@@ -12,6 +12,7 @@ class Table extends Model
         'name',
         'status',
         'active',
+        'active_parent',
         'place_id'
     ];
 }

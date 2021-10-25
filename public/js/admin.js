@@ -6,6 +6,7 @@ var order = {
 };
 
 var detail_id = null;
+var place_id = 0;
 
 function handleDelete(url, id) {
   if (!confirm('Bạn chắc chắn muốn xóa?')) {
@@ -35,7 +36,43 @@ function handleDelete(url, id) {
   })
 }
 
+function handleCancelTable(url, id) {
+  if (id == null || id == '') {
+    alert("Vui lòng chọn bàn để hủy");
+    return;
+  }
+
+  if (!confirm('Bạn chắc chắn muốn hủy bàn này?')) {
+    return false;
+  }
+
+  $.ajax({
+    type: 'POST',
+		cache: false,
+		url: url,
+    data: 'id=' + id,
+		dataType: 'json'
+  }).done(function(json) {
+    console.log(json);
+    if (json.status == 'ERR') {
+      alert(json.message);
+    } else {
+      if (json.redirect) {
+        window.location.href = json.redirect;
+      } else {
+        if (json.act) {
+          showDetail(json.details);
+        } else {
+          window.location.reload();
+        }
+      }
+    }
+  })
+}
+
 function searchTable(url, id) {
+  place_id = id;
+  console.log(place_id);
   $.ajax({
     type: 'GET',
     cache: false,
@@ -55,7 +92,7 @@ function searchTable(url, id) {
           li.innerHTML = json.tables[i].name + '<br> [Trống] <br>';
         }
 
-        if (json.tables[i].active) {
+        if (json.tables[i].active && json.tables[i].active_parent) {
           li.onclick = function() {
             order.table_id = json.tables[i].id;
             getBillDetail(json.tables[i].id);
@@ -64,6 +101,7 @@ function searchTable(url, id) {
           li.className = 'col-md-3 col-sm-4 col-xs-6';
         } else {
           li.className = 'col-md-3 col-sm-4 col-xs-6 active-false';
+          li.innerHTML = json.tables[i].name + '<br> [Chưa kích hoạt] <br>';
         }
         
         img.setAttribute('src', 'https://cdn2.iconfinder.com/data/icons/home-linear-black/2048/4443_-_Coffee_Table-512.png');
@@ -135,10 +173,12 @@ function getProductByCategory(url, id) {
       console.log(json);
       $('.order-product-select').text('');
       for (i in json.products) {
-        var option = document.createElement('option');
-        option.innerHTML = json.products[i].name;
-        option.value = json.products[i].id;
-        $('.order-product-select').append(option);
+        if (json.products[i].active && json.products[i].active_parent) {
+          var option = document.createElement('option');
+          option.innerHTML = json.products[i].name;
+          option.value = json.products[i].id;
+          $('.order-product-select').append(option);
+        }
       }
     }
   })
@@ -147,6 +187,10 @@ function getProductByCategory(url, id) {
 function addProductToBill() {
   order.product_id = $('.order-product-select').val();
   order.number = $('.order_product_number').val();
+  if (order.number <= 0) {
+    alert('Số lượng phải lớn hơn 0');
+    return;
+  }
   $.ajax({
     type: 'POST',
     url: '/admin/order/add',
@@ -181,7 +225,34 @@ function updateProductInBill() {
   })
 }
 
-function cancelTable(table_id) {
+function handlePayBill(table_id) {
+  if (table_id == null) {
+    alert('Vui lòng chọn bàn');
+    return;
+  }
+
+  if (!confirm('Bạn muốn thanh toán?')) {
+    return;
+  }
+
+  $.ajax({
+    type: 'POST',
+    data: 'id=' + table_id,
+    url: '/admin/order/pay',
+    cache: false,
+    dataType: 'json'
+  }).done(function(json) {
+    if (json.status == 'ERR') {
+      alert(json.message);
+    } else {
+      if (json.redirect) {
+        window.location.href = json.redirect;
+      }
+    }
+  });
+}
+
+function getTableMove(table_id) {
   if (table_id == null) {
     alert('Vui lòng chọn bàn');
     return;
@@ -190,14 +261,16 @@ function cancelTable(table_id) {
   $.ajax({
     type: 'POST',
     cache: false,
-    url: '/admin/order/cancel-table',
+    url: '/admin/order/get-table-move',
     data: 'table_id=' + table_id,
     dataType: 'json'
   }).done(function(json) {
-    if (json.status == 'OK') {
+    if (json.status == 'ERR') {
+      alert(json.message);
+    } else {
       console.log(json);
     }
-  });
+  })
 }
 
 $(function() {
@@ -219,6 +292,8 @@ $(function() {
 
   $('.order-btn-submit').on('click', function() {
     addProductToBill();
+    console.log(place_id);
+    searchTable('/admin/order/search-table', place_id)
   })
 
   $('.order-btn-update').on('click', function() {
@@ -226,6 +301,26 @@ $(function() {
   })
 
   $('.order-cancel-table').on('click', function() {
-    handleDelete('/admin/order/cancel-table', order.table_id);
+    handleCancelTable('/admin/order/cancel-table', order.table_id);
+  })
+
+  $('.order-pay-bill').on('click', function() {
+    handlePayBill(order.table_id);
+  })
+
+  $('.order-move-table-btn').on('click', function() {
+    getTableMove(order.table_id);
+  })
+
+  $('.cancel-select-table').on('click', function() {
+    order = {
+      'table_id' : null,
+      'product_id' : null,
+      'number' : null,
+      'detail_id': null
+    };
+    detail_id = null;
+    $('.table-name-select').text('');
+    $('.order-tbody-details').text('');
   })
 })
