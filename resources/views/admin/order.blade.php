@@ -78,7 +78,7 @@
       <div>
         <button class="btn btn-info btn-sm text-light cancel-select-table">Hủy chọn bàn</button>
         <button class="btn btn-success btn-sm order-pay-bill">Thanh toán</button>
-        <button class="btn btn-primary btn-sm order-move-table-btn" data-toggle="modal" data-target="#orderMoveTable">Chuyển bàn</button>
+        <button class="btn btn-primary btn-sm order-move-table-btn">Chuyển bàn</button>
         <button class="btn btn-danger btn-sm order-cancel-table">Hủy bàn</button>
       </div>
     </div>
@@ -124,6 +124,7 @@
       </div>
     </div>
 
+    <button data-toggle="modal" data-target="#orderMoveTable" class="order-button-move-table" style='display: none'></button>
     <div class="modal fade" id="orderMoveTable">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -138,10 +139,8 @@
             </div>
             <div class="form-group">
               <label for="">Sang bàn:</label>
-              <select name="order-product-select" class="form-control order-product-select-update">
-                @foreach($products as $_product)
-                  <option value="{{ $_product['id'] }}">{{ $_product['name'] }}</option>
-                  @endforeach
+              <select name="order-move-to-table" class="form-control order-move-to-table">
+                
               </select>
             </div>
           </div>
