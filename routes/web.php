@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('admin')->group(function() {
-    Route::get('login', 'AdminController@viewLogin')->name('login');
+Route::prefix('admin')->middleware('is-admin')->group(function() {
+    Route::get('login', 'AdminController@viewLogin')->withoutMiddleware('is-admin')->name('login');
     Route::get('/', 'AdminController@viewHome')->name('home');
     Route::prefix('auth')->group(function() {
-        Route::post('login', 'AdminController@login');
+        Route::post('login', 'AdminController@login')->withoutMiddleware('is-admin');
     });
 
     Route::prefix('place')->group(function() {

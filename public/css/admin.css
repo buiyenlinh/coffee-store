@@ -65,6 +65,7 @@ ul {
   width: 100%;
 }
 
+.user-role,
 .sidebar ul li .nav-link {
   color: #fff;
   white-space: nowrap;
@@ -73,6 +74,7 @@ ul {
   width: 100%;
 }
 
+.wrapper-sidebar-mini .user-role b,
 .wrapper-sidebar-mini .sidebar ul li .nav-link span {
   display: none;
   transition: display ease-in-out 0.4s;

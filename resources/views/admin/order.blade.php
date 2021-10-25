@@ -76,9 +76,10 @@
     <div class="d-flex justify-content-between mb-2 mt-2">
       <h3 class="table-name-select mb-0"></h3>
       <div>
-        <button class="btn btn-info btn-sm text-light cancel-select-table">Hủy chọn bàn</button>
         <button class="btn btn-success btn-sm order-pay-bill">Thanh toán</button>
+        <button class="btn btn-info btn-sm text-light cancel-select-table">Hủy chọn bàn</button>
         <button class="btn btn-primary btn-sm order-move-table-btn">Chuyển bàn</button>
+        <button class="btn btn-primary btn-sm order-merge-table-btn">Gộp bàn</button>
         <button class="btn btn-danger btn-sm order-cancel-table">Hủy bàn</button>
       </div>
     </div>
@@ -139,9 +140,7 @@
             </div>
             <div class="form-group">
               <label for="">Sang bàn:</label>
-              <select name="order-move-to-table" class="form-control order-move-to-table">
-                
-              </select>
+              <select name="order-move-to-table" class="form-control order-move-to-table"></select>
             </div>
           </div>
           <div class="modal-footer">

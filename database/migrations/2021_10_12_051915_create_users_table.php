@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('fullname');
             $table->string('username')->unique();
             $table->string('password');
+            $table->boolean('active');
             $table->enum('gender', ['N', 'F', 'M'])->default('N');
             $table->integer('birthday')->default(0);
             $table->string('address')->default('');

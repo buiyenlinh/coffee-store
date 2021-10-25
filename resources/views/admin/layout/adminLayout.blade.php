@@ -13,6 +13,12 @@
 <body>
   <div class="wrapper">
     <div class="main-sidebar">
+      <div class="wrap-user-role" style="border-bottom: 1px solid #fff">
+        <div class="user-role p-3" style="color: yellow;">
+          <i class="fas fa-user-tie mr-2" style="font-size: 25px"></i>
+          <b>{{ $role->name }}</b>
+        </div>
+      </div>
       <div class="sidebar">
         <ul class="nav nav-pills flex-column" role="tablist">
           @foreach ($menu as $_menu)
