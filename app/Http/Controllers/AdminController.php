@@ -87,29 +87,33 @@ class AdminController extends Controller
             'icon' => 'fas fa-folder-plus'
         ];
 
-        $menu[] = [
-            'link' => route('table', [], false),
-            'title' => 'Danh sách bàn',
-            'icon' => 'fas fa-table'
-        ];
-
-        $menu[] = [
-            'link' => route('product', [], false),
-            'title' => 'Sản phẩm',
-            'icon' => 'fas fa-coffee'
-        ];
-
-        $menu[] = [
-            'link' => route('category', [], false),
-            'title' => 'Loại sản phẩm',
-            'icon' => 'fas fa-clipboard-list'
-        ];
-
-        $menu[] = [
-            'link' => route('place', [], false),
-            'title' => 'Khu vực',
-            'icon' => 'fas fa-map'
-        ];
+        $role = $this->getRole();
+        if ($role->level == 1 || $role->level == 2) {
+            $menu[] = [
+                'link' => route('table', [], false),
+                'title' => 'Danh sách bàn',
+                'icon' => 'fas fa-table'
+            ];
+    
+            $menu[] = [
+                'link' => route('product', [], false),
+                'title' => 'Sản phẩm',
+                'icon' => 'fas fa-coffee'
+            ];
+    
+            $menu[] = [
+                'link' => route('category', [], false),
+                'title' => 'Loại sản phẩm',
+                'icon' => 'fas fa-clipboard-list'
+            ];
+    
+            $menu[] = [
+                'link' => route('place', [], false),
+                'title' => 'Khu vực',
+                'icon' => 'fas fa-map'
+            ];
+        }
+        
         return $menu;
     }
 
