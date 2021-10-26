@@ -312,6 +312,8 @@ function moveTable() {
   })
 }
 
+
+
 $(function() {
   $.ajaxSetup({
     headers: {
@@ -366,4 +368,11 @@ $(function() {
   $('.order-btn-move-table').on('click', function() {
     moveTable();
   })
+
+  // click avatar
+
+  $('.user-btn-add-avt').on('click', function() {
+    $('.user-input-avt').click();
+  })
+
 })

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Role;
 use App\Models\User;
@@ -111,6 +113,12 @@ class AdminController extends Controller
                 'link' => route('place', [], false),
                 'title' => 'Khu vực',
                 'icon' => 'fas fa-map'
+            ];
+
+            $menu[] = [
+                'link' => route('user', [], false),
+                'title' => 'Người dùng',
+                'icon' => 'fas fa-users'
             ];
         }
         
@@ -766,6 +774,8 @@ class AdminController extends Controller
         $product_id = $request->product_id;
         $number = $request->number;
 
+        $user_id = Auth::user()->id;
+
         $bill_id = 0;
         $bill = Bill::where('table_id', '=', $table_id)
             ->where('status', '=', 0)
@@ -773,7 +783,7 @@ class AdminController extends Controller
         if (!$bill) {
             $bill_id = Bill::create([
                 'table_id' => $table_id,
-                'user_id' => 1,
+                'user_id' => $user_id,
                 'status' => 0
             ])->id;
 
@@ -935,6 +945,200 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'redirect' => route('order', [], false)
+        ]);
+    }
+
+    /**
+     * View users => users list
+     */
+    public function viewUser(Request $request) {
+        $data_form = [];
+        if ($request->has('add')) {
+            $data_form = [
+                'id' => null,
+                'fullname' => null,
+                'username' => null,
+                'password' => null,
+                'avatar' => null,
+                'active' => null,
+                'gender' => null,
+                'birthday' => null,
+                'address' => null,
+                'role_id' => null
+            ];
+        }
+
+        if ($request->has('edit')) {
+            $user = User::find($request->edit);
+            $data_form = [
+                'id' => $user->id,
+                'fullname' => $user->fullname,
+                'username' => $user->username,
+                'password' => $user->password,
+                'avatar' => $user->avatar,
+                'active' => $user->active,
+                'gender' => $user->gender,
+                'birthday' => $user->birthday,
+                'address' => $user->address,
+                'role_id' => $user->role_id
+            ];
+            if ($data_form['avatar']) {
+                $data_form['avatar'] = Storage::url($user->avatar);
+            }
+        }
+
+        $data = $this->getData();
+        $data['title'] = 'Người dùng';
+        $users = User::all();
+        $data['users'] = $users;
+        $data['data_form'] = $data_form;
+        return view('admin.user', $data);
+    }
+
+    /**
+     * Add user
+     */
+
+    public function addUser(Request $request) {
+
+        $role = $this->getRole();
+        if ($role->level == 3) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền thêm');
+        }
+
+        $request->validate(
+            [
+                'fullname' => 'required',
+                'password' => 'required',
+                'username' => 'required|unique:users'
+            ],
+            [
+                'fullname.required' => 'Họ tên người dùng là bắt buộc',
+                'password.required' => 'Mật khẩu là bắt buộc',
+                'username.required' => 'Tên đăng nhập là bắt buộc',
+                'username.unique' => 'Tên đăng nhập đã được sử dụng'
+            ]
+        );
+
+        $old_fullname = $request->old('fullname');
+        $old_username = $request->old('username');
+        $active = 0;
+        if ($request->active) {
+            $active = 1;
+        }
+        $user = User::create([
+            'fullname' => $request->fullname,
+            'username' => $request->username,
+            'active' => $active,
+            'password' => bcrypt($request->password),
+            'role_id' => $request->role_id
+        ]); 
+        return redirect()->route('user');
+    }
+
+    /**
+     * Edit user
+     */
+    public function editUser(Request $request) {
+        $userUpdate = User::find($request->id);
+        $roleUserUpdate = Role::find($userUpdate->role_id);
+
+        $role = $this->getRole();
+        if ($role->level == 3 || $role->level >= $roleUserUpdate->level) {
+            return back()->withInput()->with('error_role', 'Tài khoản của bạn không có quyền chỉnh sửa tài khoản này');
+        }
+
+        $request->validate(
+            [ 'fullname' => 'required' ],
+            [ 'fullname.required' => 'Họ tên người dùng là bắt buộc' ]
+        );
+
+        $old_fullname = old($request->fullname);
+        $old_address = old($request->address);
+        $old_gender = old($request->gender);
+
+        $active = 0;
+        if ($request->active) {
+            $active = 1;
+        }
+
+        $time = explode('-', $request->birthday);
+		$birthday = mktime(0, 0, 0 , $time[1], $time[2], $time[0]);
+
+        $avatar = $userUpdate->avatar;
+        if ($request->avatar) {
+            $avatar = $request->file('avatar')->store('public');
+        }
+        
+        $address = $request->address;
+        if ($address == null) {
+            $address = '';
+        }
+        
+        $user = User::where('id', $request->id)
+            ->update([
+                'fullname' => $request->fullname,
+                'active' => $active,
+                'gender' => $request->gender,
+                'birthday' => $birthday,
+                'address' => $address,
+                'avatar' => $avatar
+            ]);
+        
+        return redirect()->route('user');
+    }
+
+    /**
+     * Delete user
+     */
+
+    public function deleteUser(Request $request) {
+        $id = $request->id;
+
+        $userUpdate = User::find($id);
+        $roleUserUpdate = Role::find($userUpdate->role_id);
+
+        $role = $this->getRole();
+        if ($role->level == 3 || $role->level >= $roleUserUpdate->level) {
+            return response()->json([
+                'status' => 'ERR',
+                'error' => 'Tài khoản của bạn không có quyền xóa tài khoản này'
+            ]);
+        }
+
+        $user = User::find($id);
+        $user->delete();
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('user')
+        ]);
+    }
+
+
+    /**
+     * Delete avatar
+     */
+
+    public function deleteAvatar(Request $request) {
+        $id = $request->id;
+        $userUpdate = User::find($id);
+        $roleUserUpdate = Role::find($userUpdate->role_id);
+
+        $role = $this->getRole();
+        if ($role->level == 3 || $role->level >= $roleUserUpdate->level) {
+            return response()->json([
+                'status' => 'ERR',
+                'error' => 'Tài khoản của bạn không có quyền chỉnh sửa tài khoản này'
+            ]);
+        }
+
+        $user = User::find($id)
+            ->update([
+                'avatar' => ''
+            ]);
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => '/admin/user?edit=' . $id
         ]);
     }
 }

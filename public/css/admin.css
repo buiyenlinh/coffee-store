@@ -105,7 +105,8 @@ ul {
 /* PLACE PAGE */
 .form-add-place,
 .form-add-category,
-.product-form {
+.product-form,
+.user-form {
   border: 1px solid #3490dc;
   background-color: #fff;
   padding: 10px;

@@ -60,6 +60,14 @@ Route::prefix('admin')->middleware('is-admin')->group(function() {
         Route::post('get-table-move', 'AdminController@getTableMove');
         Route::post('move-table', 'AdminController@moveTable');
     });
+
+    Route::prefix('user')->group(function() {
+        Route::get('/', 'AdminController@viewUser')->name('user');
+        Route::post('add', 'AdminController@addUser');
+        Route::post('edit', 'AdminController@editUser');
+        Route::post('delete', 'AdminController@deleteUser');
+        Route::post('delete-avatar', 'AdminController@deleteAvatar');
+    });
 });
 
 Route::get('/', function() {
