@@ -253,7 +253,7 @@ function handlePayBill(table_id) {
   });
 }
 
-function getTableMove(table_id) {
+function getTableMoveMerge(table_id, url) {
   if (table_id == null) {
     alert('Vui lòng chọn bàn');
     return;
@@ -262,13 +262,14 @@ function getTableMove(table_id) {
   $.ajax({
     type: 'POST',
     cache: false,
-    url: '/admin/order/get-table-move',
+    url: url,
     data: 'table_id=' + table_id,
     dataType: 'json'
   }).done(function(json) {
     if (json.status == 'ERR') {
       alert(json.message);
     } else {
+      $('.order-move-to-table').text('');
       $('.order-table-name-move').val(json.table_move['name']);
       table_move_id = json.table_move['id'];
       for (let i in json.response) {
@@ -285,7 +286,7 @@ function getTableMove(table_id) {
 
 
 // chuyển bàn
-function moveTable() {
+function moveMergeTable() {
   var tableMoveTo = $('.order-move-to-table').val();
   if (tableMoveTo == null || tableMoveTo <= 0) {
     alert('Vui lòng chọn bàn chuyển đến');
@@ -350,7 +351,11 @@ $(function() {
   })
 
   $('.order-move-table-btn').on('click', function() {
-    getTableMove(order.table_id);
+    getTableMoveMerge(order.table_id, '/admin/order/get-table-move');
+  })
+
+  $('.order-merge-table-btn').on('click', function() {
+    getTableMoveMerge(order.table_id, '/admin/order/get-table-merge');
   })
 
   $('.cancel-select-table').on('click', function() {
@@ -365,8 +370,8 @@ $(function() {
     $('.order-tbody-details').text('');
   })
 
-  $('.order-btn-move-table').on('click', function() {
-    moveTable();
+  $('.order-btn-move-merge-table').on('click', function() {
+    moveMergeTable();
   })
 
   // click avatar
