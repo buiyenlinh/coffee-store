@@ -130,12 +130,12 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h3 class="modal-title">Chuyển bàn</h3>
+            <h3 class="modal-title">Chuyển/Gộp bàn</h3>
             <button class="close" data-dismiss="modal" type="button">&times;</button>
           </div>
           <div class="modal-body">
             <div class="form-group">
-              <label for="">Bàn chuyển:</label>
+              <label for="">Từ bàn:</label>
               <input type="text" class="order-table-name-move form-control" value="" disabled>
             </div>
             <div class="form-group">
@@ -144,7 +144,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary order-btn-move-table" data-dismiss="modal">Chuyển</button>
+            <button type="button" class="btn btn-primary order-btn-move-merge-table" data-dismiss="modal">Chuyển/Gộp</button>
             <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
           </div>
         </div>

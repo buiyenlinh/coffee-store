@@ -925,16 +925,69 @@ class AdminController extends Controller
         ]);
     }
 
+
+    /**
+     * get table list for merge table
+     * return {
+     *  status
+     *  response : danh sách các bàn để gộp (bàn có người)
+     *  table-move: Thông tin bàn được chuyển
+     * }
+     */
+    public function getTableMerge(Request $request) {
+        $id = $request->table_id;
+        $table = Table::find($id)->toArray();
+        
+        if (!$table['status']) {
+            return response()->json([
+                'status' => 'ERR',
+                'message' => $table['name'] . ' trống'
+            ]);
+        }
+
+        $response = Table::where('id', '!=', $id)
+            ->where('status', '=', 1)
+            ->where('active_parent', 1)
+            ->get()
+            ->toArray();
+
+        return response()->json([
+            'status' => 'OK',
+            'response' => $response,
+            'table_move' => $table
+        ]);
+    }
+
+
     /**
      * Thực hiện chuyển bàn
      */
     public function moveTable(Request $request) {
-        $table_move_id = $request->table_move_id;
-        $table_move_to_id = $request->table_move_to_id;
+        $table_move_id = $request->table_move_id; // Bàn chuyển/gộp
+        $table_move_to_id = $request->table_move_to_id; // Bàn đc chuyển/gộp tới
+
+        $bill2 = Bill::where('table_id', $table_move_to_id)
+            ->where('status', 0)
+            ->get()->toArray();
         
-        Bill::where('table_id', $table_move_id)
+        if ($bill2) {  // Gộp bàn
+            $bill1 = Bill::where('table_id', $table_move_id)->get()->toArray();
+
+            // Chuyển sp bill1 qua bill2
+            Detail::where('bill_id', $bill1[0]['id'])
+                ->update([
+                    'bill_id' => $bill2[0]['id']
+                ]);
+
+            // Xóa bill1
+            $bill_del = Bill::where('table_id', $table_move_id);
+            $bill_del->delete();
+
+        } else {    // Chuyển bàn
+            Bill::where('table_id', $table_move_id)
             ->where('status', 0)
             ->update(['table_id' => $table_move_to_id]);
+        }
 
         Table::where('id', $table_move_id)
             ->update(['status' => 0]);
