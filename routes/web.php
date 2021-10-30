@@ -69,6 +69,10 @@ Route::prefix('admin')->middleware('is-admin')->group(function() {
         Route::post('delete', 'AdminController@deleteUser');
         Route::post('delete-avatar', 'AdminController@deleteAvatar');
     });
+
+    Route::prefix("profile")->group(function() {
+        Route::get('/', 'AdminController@viewProfile')->name('profile');
+    });
 });
 
 Route::get('/', function() {

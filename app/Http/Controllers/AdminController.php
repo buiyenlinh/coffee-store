@@ -122,6 +122,12 @@ class AdminController extends Controller
             ];
         }
         
+        $menu[] = [
+            'link' => route('profile', [], false),
+            'title' => 'Tài khoản',
+            'icon' => 'fas fa-user-circle'
+        ];
+
         return $menu;
     }
 
@@ -1193,5 +1199,33 @@ class AdminController extends Controller
             'status' => 'OK',
             'redirect' => '/admin/user?edit=' . $id
         ]);
+    }
+
+    /**
+     * Profile
+     */
+    public function viewProfile(Request $request) {
+        $data = $this->getData();
+        $data['title'] = "Tài khoản";
+        $user = Auth::user();
+        $data_form = [
+            'id' => $user->id,
+            'fullname' => $user->fullname,
+            'username' => $user->username,
+            'password' => $user->password,
+            'avatar' => $user->avatar,
+            'active' => $user->active,
+            'gender' => $user->gender,
+            'birthday' => $user->birthday,
+            'address' => $user->address,
+            'role_id' => $user->role_id
+        ];
+
+        if ($data_form['avatar']) {
+            $data_form['avatar'] = Storage::url($user->avatar);
+        }
+
+        $data['data_form'] = $data_form;
+        return view('admin.profile', $data);
     }
 }
