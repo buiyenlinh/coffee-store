@@ -34,8 +34,13 @@
     </div>
     <div class="main-content">
       <div class="main-content-header">
-        <div class="header-icon-bar">
-          <i class="fas fa-bars" data-toggle="sidebar"></i>
+        <div class="d-flex justify-content-between">
+          <div class="header-icon-bar">
+            <i class="fas fa-bars" data-toggle="sidebar"></i>
+          </div>
+          <div class="header-logout">
+            <a type="button" class="logout">Logout</a>
+          </div>
         </div>
       </div>
       <div class="main-content-info p-3">

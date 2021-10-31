@@ -76,11 +76,11 @@
     <div class="d-flex justify-content-between mb-2 mt-2">
       <h3 class="table-name-select mb-0"></h3>
       <div>
-        <button class="btn btn-success btn-sm order-pay-bill">Thanh toán</button>
-        <button class="btn btn-info btn-sm text-light cancel-select-table">Hủy chọn bàn</button>
-        <button class="btn btn-primary btn-sm order-move-table-btn">Chuyển bàn</button>
-        <button class="btn btn-primary btn-sm order-merge-table-btn">Gộp bàn</button>
-        <button class="btn btn-danger btn-sm order-cancel-table">Hủy bàn</button>
+        <button class="mt-1 btn btn-success btn-sm order-pay-bill">Thanh toán</button>
+        <button class="mt-1 btn btn-info btn-sm text-light cancel-select-table">Hủy chọn bàn</button>
+        <button class="mt-1 btn btn-primary btn-sm order-move-table-btn">Chuyển bàn</button>
+        <button class="mt-1 btn btn-primary btn-sm order-merge-table-btn">Gộp bàn</button>
+        <button class="mt-1 btn btn-danger btn-sm order-cancel-table">Hủy bàn</button>
       </div>
     </div>
     <div class="table-responsive">
