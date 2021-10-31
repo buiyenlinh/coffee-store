@@ -50,7 +50,8 @@ class AdminController extends Controller
         $username = $request->old('username');
         $login = [
             'username' => $request->input('username'),
-            'password' => $request->input('password')
+            'password' => $request->input('password'),
+            'active' => 1
         ];
 
         if (!Auth::attempt($login)) {
