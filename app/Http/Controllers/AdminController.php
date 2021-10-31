@@ -1228,4 +1228,72 @@ class AdminController extends Controller
         $data['data_form'] = $data_form;
         return view('admin.profile', $data);
     }
+
+
+    /**
+     * edit profile
+     */
+    public function editProfile(Request $request) {
+        $user = Auth::user();
+        $time = explode('-', $request->birthday);
+		$birthday = mktime(0, 0, 0 , $time[1], $time[2], $time[0]);
+        if ($request->fullname == null || $request->username == null || $request->address == null) {
+            return back()->withInput()->with('info_error', 'Vui lòng điền đủ thông tin trước khi cập nhật!');
+        }
+
+        $avatar = $user->avatar;
+        if ($request->avatar) {
+            $avatar = $request->file('avatar')->store('public');
+        }
+
+        User::where('id', $user->id)
+            ->update([
+                'fullname' => $request->fullname,
+                'username' => $request->username,
+                'gender' => $request->gender,
+                'address' => $request->address,
+                'birthday' => $birthday,
+                'avatar' => $avatar
+            ]);
+        return redirect()->route('profile');
+    }
+
+    /**
+     * Change password in profile page
+     */
+    public function changePassword(Request $request) {
+        $old_pass = $request->old_pass;
+        $new_pass = $request->new_pass;
+        $re_new_pass = $request->re_new_pass;
+        $user = Auth::user();
+
+        return redirect()->route('profile');
+    }
+
+    /**
+     * Delete avatar in profile page
+     */
+    public function deleteAvatarProfile() {
+        $user = Auth::user();
+        User::where('id', $user->id)
+            ->update(['avatar' => '']);
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('profile')
+        ]);
+    }
+
+    /**
+     * Logout
+     */
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'status' => 'OK',
+            'redirect' => route('login')
+        ]);
+    }
 }
