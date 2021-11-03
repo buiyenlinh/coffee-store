@@ -727,23 +727,14 @@ class AdminController extends Controller
 
     public function getDetailByBillId($id) {
         $details = Detail::where('bill_id', '=', $id)->get()->toArray();
-        $response = [];
-        foreach($details as $_detail) {
-            $dt = $_detail;
-            $product = Product::find($_detail['product_id']);
-            $response[] = [
-                'dt' => $dt,
-                'product' => $product
-            ];
-        };
-            
-        return $response;
+        
+        return $details;
     }
     /**
      * get bill detail by table_id
      */
     public function getBillDetail(Request $request) {
-        $bill = Bill::where('table_id', '=', $request->id)
+        $bill = Bill::where('table_name', '=', $request->name)
             ->where('status', '=', 0)->first();
         $response = [];
         if ($bill) {
@@ -778,19 +769,21 @@ class AdminController extends Controller
      */
     public function addProductInBill(Request $request) {
         $table_id = $request->table_id;
+        $table_name = $request->table_name;
         $product_id = $request->product_id;
         $number = $request->number;
 
-        $user_id = Auth::user()->id;
-
+        $username = Auth::user()->username;
+        $product = Product::find($product_id);
         $bill_id = 0;
-        $bill = Bill::where('table_id', '=', $table_id)
+        $bill = Bill::where('table_name', '=', $table_name)
             ->where('status', '=', 0)
             ->first();
+        
         if (!$bill) {
             $bill_id = Bill::create([
-                'table_id' => $table_id,
-                'user_id' => $user_id,
+                'table_name' => $table_name,
+                'username' => $username,
                 'status' => 0
             ])->id;
 
@@ -804,7 +797,9 @@ class AdminController extends Controller
 
         Detail::create([
             'bill_id' => $bill_id,
-            'product_id' => $product_id,
+            'username' => $username,
+            'product' => $product->name,
+            'price' => $product->price,
             'number' => $number
         ]);
 

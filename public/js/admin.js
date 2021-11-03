@@ -1,5 +1,6 @@
 var order = {
   'table_id' : null,
+  'table_name': null,
   'product_id' : null,
   'number' : null,
   'detail_id': null
@@ -96,7 +97,8 @@ function searchTable(url, id) {
         if (json.tables[i].active && json.tables[i].active_parent) {
           li.onclick = function() {
             order.table_id = json.tables[i].id;
-            getBillDetail(json.tables[i].id);
+            order.table_name = json.tables[i].name;
+            getBillDetail(json.tables[i].name);
             $('.table-name-select').text(json.tables[i].name);
           }
           li.className = 'col-md-3 col-sm-4 col-xs-6';
@@ -113,12 +115,12 @@ function searchTable(url, id) {
   })
 }
 
-function getBillDetail(id) {
+function getBillDetail(name) {
   $.ajax({
     type: 'GET',
     cache: false,
     url: '/admin/order/get-bill-detail',
-    data: 'id=' + id,
+    data: 'name=' + name,
     dataType: 'json'
   }).done(function(json) {
     if (json.status == 'OK') {
@@ -141,22 +143,22 @@ function showDetail(details) {
     a_delete.className = 'btn btn-danger btn-sm mr-2';
     a_delete.innerHTML = 'Xóa';
     a_delete.onclick = function() {
-      handleDelete('/admin/order/delete', details[i].dt.id);
+      handleDelete('/admin/order/delete', details[i].id);
     }
     a_update.className = 'btn btn-primary btn-sm';
     a_update.innerHTML = 'Sửa';
     a_update.setAttribute('data-toggle', 'modal');
     a_update.setAttribute('data-target', '#orderModal');
     a_update.onclick = function() {
-      order.detail_id = details[i].dt.id;
-      $('.order-product-select-update option[value=' + details[i].product.id + ']').attr('selected', 'selected');
-      $('.order_product_number_update').val(details[i].dt.number);
+      order.detail_id = details[i].id;
+      $('.order-product-select-update option[value=' + details[i].id + ']').attr('selected', 'selected');
+      $('.order_product_number_update').val(details[i].number);
     }
 
     td.append(a_delete, a_update);
-    td_name.innerHTML = details[i].product?.name;
-    td_price.innerHTML = details[i].product?.price;
-    td_number.innerHTML = details[i].dt?.number;
+    td_name.innerHTML = details[i].product;
+    td_price.innerHTML = details[i].price;
+    td_number.innerHTML = details[i].number;
     tr.append(td_name, td_price, td_number, td);
     $('.order-tbody-details').append(tr);
   }

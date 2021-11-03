@@ -19,10 +19,9 @@ class CreateDetailsTable extends Migration
                 ->constrained('bills')
                 ->unsigned()
                 ->onDelete('cascade');
-            $table->foreignId('product_id')
-                ->constrained('products')
-                ->unsigned()
-                ->onDelete('cascade');
+            $table->string('username');
+            $table->string('product');
+            $table->integer('price');
             $table->integer('number');
             $table->timestamps();
         });
