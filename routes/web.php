@@ -17,6 +17,7 @@ Route::prefix('admin')->middleware('is-admin')->group(function() {
     Route::get('/', 'AdminController@viewHome')->name('home');
     Route::prefix('auth')->group(function() {
         Route::post('login', 'AdminController@login')->withoutMiddleware('is-admin');
+        Route::post('logout', 'AdminController@logout')->withoutMiddleware('is-admin');
     });
 
     Route::prefix('place')->group(function() {
@@ -68,6 +69,13 @@ Route::prefix('admin')->middleware('is-admin')->group(function() {
         Route::post('edit', 'AdminController@editUser');
         Route::post('delete', 'AdminController@deleteUser');
         Route::post('delete-avatar', 'AdminController@deleteAvatar');
+    });
+
+    Route::prefix("profile")->group(function() {
+        Route::get('/', 'AdminController@viewProfile')->name('profile');
+        Route::post('edit', 'AdminController@editProfile');
+        Route::post('change-password', 'AdminController@changePassword');
+        Route::post('delete-avatar', 'AdminController@deleteAvatarProfile');
     });
 });
 

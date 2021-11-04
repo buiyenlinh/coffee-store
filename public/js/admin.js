@@ -316,12 +316,45 @@ function moveMergeTable() {
 }
 
 
+function deleteAvatarProfile() {
+  $.ajax({
+    type: 'POST', 
+    cache: false,
+    url: '/admin/profile/delete-avatar',
+    data: '',
+    dataType: 'json'
+  }).done(function(json) {
+    if (json.status == 'OK') {
+      if (json.redirect) {
+        window.location.href = json.redirect
+      }
+    } 
+  })
+}
+
+function logout() {
+  $.ajax({
+    type: 'POST',
+    cache: false,
+    url: '/admin/auth/logout',
+    data: '',
+    dataType: 'json'
+  }).done(function(json) {
+    if (json.status == 'OK') {
+      window.location.href = json.redirect;
+    }
+  })
+}
 
 $(function() {
   $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': CSRF_TOKEN
     }
+  })
+
+  $('.logout').on('click', function() {
+    logout();
   })
 
   $('[data-toggle="sidebar"]').on('click', function() {
@@ -380,6 +413,21 @@ $(function() {
 
   $('.user-btn-add-avt').on('click', function() {
     $('.user-input-avt').click();
+  })
+
+  $('.profile-avatar-change-button').on('click', function() {
+    $('#profile-avatar-change').click();
+  })
+
+  $('#profile-avatar-change').on('change', function() {
+    var avt = $('#profile-avatar-change')[0].files;
+    var urlPreview = URL.createObjectURL(avt[0]);
+    $('.profile-avatar img').attr('src', urlPreview);
+  })
+
+
+  $('.profile-avatar-delete-button').on('click', function() {
+    deleteAvatarProfile();
   })
 
 })

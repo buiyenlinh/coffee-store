@@ -114,7 +114,7 @@
       <h3 class="mb-0">Danh sách người dùng</h3>
       <a class="btn btn-primary" href="/admin/user?add">Thêm</a>
     </div>
-    <div class="table-response">
+    <div class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead class="bg-primary text-light">
           <th>Họ tên</th>
