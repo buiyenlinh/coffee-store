@@ -228,8 +228,8 @@ function updateProductInBill() {
   })
 }
 
-function handlePayBill(table_id) {
-  if (table_id == null) {
+function handlePayBill(table_name) {
+  if (table_name == null || table_name == "") {
     alert('Vui lòng chọn bàn');
     return;
   }
@@ -240,7 +240,7 @@ function handlePayBill(table_id) {
 
   $.ajax({
     type: 'POST',
-    data: 'id=' + table_id,
+    data: 'table_name=' + table_name,
     url: '/admin/order/pay',
     cache: false,
     dataType: 'json'
@@ -349,7 +349,7 @@ $(function() {
   })
 
   $('.order-pay-bill').on('click', function() {
-    handlePayBill(order.table_id);
+    handlePayBill(order.table_name);
   })
 
   $('.order-move-table-btn').on('click', function() {
