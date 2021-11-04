@@ -833,14 +833,17 @@ class AdminController extends Controller
      * update product in bill
      */
     function updateProductInBill(Request $request) {
-        $table_id = $request->table_id;
         $product_id = $request->product_id;
+        $product = Product::find($product_id);
+
         $number = $request->number;
         $detail_id = $request->detail_id;
+
         $bill_id = Detail::find($detail_id)->bill_id;
+
         Detail::where('id', '=', $detail_id)
-            ->update(['product_id' => $product_id, 'number' => $number]);
-        
+            ->update(['product' => $product->name, 'number' => $number]);
+
         $response = $this->getDetailByBillId($bill_id);
         return response()->json([
             'status' => 'OK',
@@ -872,8 +875,8 @@ class AdminController extends Controller
      * pay table
      */
     public function payTable(Request $request) {
-        $table_id = $request->id;
-        $bill = Bill::where('table_id', '=', $table_id)
+        $table_name = $request->table_name;
+        $bill = Bill::where('table_name', '=', $table_name)
             ->where('status', '=', 0)->get()->toArray();
 
         if (!$bill) {
@@ -883,10 +886,10 @@ class AdminController extends Controller
             ]);
         }
 
-        Table::where('id', '=', $table_id)
+        Table::where('name', '=', $table_name)
             ->update(['status' => 0]);
         
-        Bill::where('table_id', '=', $table_id)
+        Bill::where('table_name', '=', $table_name)
             ->where('status', '=', 0)
             ->update(['status' => 1]);
         return response()->json([
