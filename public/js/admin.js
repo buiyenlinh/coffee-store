@@ -176,7 +176,7 @@ function getProductByCategory(url, id) {
       console.log(json);
       $('.order-product-select').text('');
       for (i in json.products) {
-        if (json.products[i].active && json.products[i].active_parent) {
+        if (json.products[i].active && json.products[i].active_parent && json.products[i].status) {
           var option = document.createElement('option');
           option.innerHTML = json.products[i].name;
           option.value = json.products[i].id;
