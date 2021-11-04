@@ -77,6 +77,11 @@ Route::prefix('admin')->middleware('is-admin')->group(function() {
         Route::post('change-password', 'AdminController@changePassword');
         Route::post('delete-avatar', 'AdminController@deleteAvatarProfile');
     });
+
+    Route::prefix('bill')->group(function() {
+        Route::get('/', 'AdminController@viewBill')->name('bill');
+        Route::post('detail-bill', 'AdminController@billDetail');
+    });
 });
 
 Route::get('/', function() {
