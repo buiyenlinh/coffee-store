@@ -346,6 +346,44 @@ function logout() {
   })
 }
 
+
+function billGetDetail(bill_id) {
+  $.ajax({
+    type: 'POST',
+    cache: false,
+    url: '/admin/bill/detail-bill',
+    data: 'bill_id=' + bill_id,
+    dataType: 'json'
+  }).done(function(json) {
+    if (json.status == "OK") {
+      $('.bill-details tbody').text("");
+      var moneySum = 0;
+      for (i in json.details) {
+        console.log(json.details[i]);
+        var tr = document.createElement('tr');
+        var td_name = document.createElement('td');
+        var td_price = document.createElement('td');
+        var td_number = document.createElement('td');
+        var td_username = document.createElement('td');
+        var td_time = document.createElement('td');
+
+        td_time.innerHTML = json.details[i].created_at;
+        td_name.innerHTML = json.details[i].product;
+        td_price.innerHTML = json.details[i].price;
+        td_number.innerHTML = json.details[i].number;
+        td_username.innerHTML = json.details[i].username;
+
+        moneySum += json.details[i].price * json.details[i].number;
+
+        tr.append(td_time, td_name, td_price, td_number, td_username);
+        $('.bill-details tbody').append(tr);
+        $('.bill-money-sum').text('Tổng tiền: ' + moneySum + ' VNĐ');
+      }
+    }
+  })
+}
+
+
 $(function() {
   $.ajaxSetup({
     headers: {

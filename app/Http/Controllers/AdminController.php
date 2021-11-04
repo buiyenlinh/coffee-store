@@ -129,6 +129,14 @@ class AdminController extends Controller
             'icon' => 'fas fa-user-circle'
         ];
 
+        if ($role->level == 1) {
+            $menu[] = [
+                'link' => route('bill'),
+                'title' => 'Hóa đơn',
+                'icon' => 'fas fa-money-bill-alt'
+            ];
+        }
+
         return $menu;
     }
 
@@ -1293,6 +1301,33 @@ class AdminController extends Controller
         return response()->json([
             'status' => 'OK',
             'redirect' => route('login')
+        ]);
+    }
+
+    /**
+     * view bill page
+     */
+    public function viewBill() {
+        $data = $this->getData();
+        $data['title'] = 'Hóa đơn';
+
+        $data['bills'] = Bill::all()->toArray();
+        return view('admin.bill', $data);
+    }
+
+    /**
+     * get product list in bill
+     */
+    public function billDetail(Request $request) {
+        $details = Detail::where('bill_id', $request->bill_id)
+            ->get()->toArray();
+
+        for ($i = 0; $i < count($details); $i++) {
+            $details[$i]['created_at'] = date('H:i, d/m/y', strtotime($details[$i]['created_at']));
+        }
+        return response()->json([
+            'status' => 'OK',
+            'details' => $details
         ]);
     }
 }
